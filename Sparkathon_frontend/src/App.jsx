@@ -1,0 +1,92 @@
+import React, { useState, useEffect } from "react";
+import {
+  TrendingUp,
+  DollarSign,
+  Target,
+  BarChart3,
+  Package,
+  Users,
+  ArrowRight,
+  CheckCircle,
+} from "lucide-react";
+import Hero from "./components/Hero";
+import ProductTrends from "./components/ProductTrends";
+import PricingOptimization from "./components/PricingOptimization";
+import MarketingInsights from "./components/MarketingInsights";
+import BusinessImpact from "./components/BusinessImpact";
+
+function App() {
+  const [products, setProducts] = useState([]);
+  const [marketingData, setMarketingData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsRes, marketingRes] = await Promise.all([
+          fetch("http://localhost:5000/api/products"),
+          fetch("http://localhost:5000/api/marketing"),
+        ]);
+
+        if (!productsRes.ok || !marketingRes.ok) {
+          throw new Error("Failed to fetch data");
+        }
+
+        const productsData = await productsRes.json();
+        const marketingDataRes = await marketingRes.json();
+
+        setProducts(productsData.data);
+        setMarketingData(marketingDataRes.data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading ML insights...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 mb-4">
+            <BarChart3 className="h-12 w-12 mx-auto" />
+          </div>
+          <p className="text-gray-600">Error loading data: {error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+      <Hero />
+      <ProductTrends products={products} />
+      <PricingOptimization products={products} />
+      <MarketingInsights marketingData={marketingData} />
+      <BusinessImpact products={products} />
+    </div>
+  );
+}
+
+export default App;
