@@ -1,5 +1,5 @@
 // Controller for user
 
-exports.getuser = (req, res) => {
-    res.send('user data');
-};
+export function getuser(req, res) {
+  res.send("user data");
+}

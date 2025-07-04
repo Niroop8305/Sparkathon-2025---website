@@ -1,8 +1,8 @@
 {
-  "type": "module",
   "name": "sparkathon_backend",
   "version": "1.0.0",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js"
@@ -16,10 +16,12 @@
     "cors": "^2.8.5",
     "csv": "^6.3.11",
     "csv-parser": "^3.2.0",
+    "dotenv": "^17.0.1",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.16.1"
+    "mongoose": "^8.16.1",
+    "multer": "^2.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

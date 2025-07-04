@@ -1,9 +1,8 @@
-// Routes for user
+import express from "express";
+import { getuser } from "../controllers/user.controller.js";
 
-const express = require('express');
 const router = express.Router();
-const { getuser } = require('../controllers/user.controller');
 
-router.get('/', getuser);
+router.get("/", getuser);
 
-module.exports = router;
+export default router;
