@@ -1,42 +1,45 @@
 // src/controllers/marketing.controller.js
 
-const sampleMarketingData = [
-  {
-    product: "Organic Avocados",
-    channels: [
-      { name: "Social Media", effectiveness: 87, cost: "$2,340", roi: "312%" },
-      { name: "Email Marketing", effectiveness: 72, cost: "$890", roi: "245%" },
-      {
-        name: "In-Store Display",
-        effectiveness: 91,
-        cost: "$1,200",
-        roi: "387%",
-      },
-      { name: "Digital Ads", effectiveness: 68, cost: "$3,450", roi: "198%" },
-    ],
-    optimalMessage: "Fresh, healthy, and sustainably sourced",
-  },
-  {
-    product: "Greek Yogurt",
-    channels: [
-      { name: "Social Media", effectiveness: 78, cost: "$1,890", roi: "267%" },
-      { name: "Email Marketing", effectiveness: 84, cost: "$650", roi: "289%" },
-      {
-        name: "In-Store Display",
-        effectiveness: 76,
-        cost: "$980",
-        roi: "234%",
-      },
-      { name: "Digital Ads", effectiveness: 82, cost: "$2,100", roi: "278%" },
-    ],
-    optimalMessage: "High protein, low sugar, perfect for active lifestyles",
-  },
-];
+import path from "path";
+import fs from "fs";
+import csv from "csv-parser";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Read marketing data from predicted_platform_types.csv
+// Read marketing data from predicted_platform_types.csv
 export const getMarketing = (req, res) => {
-  res.json({
-    success: true,
-    data: sampleMarketingData,
-    timestamp: new Date().toISOString(),
-  });
+  const results = {};
+  const filePath = path.join(
+    __dirname,
+    "../uploads/predicted_platform_types.csv"
+  );
+  fs.createReadStream(filePath)
+    .pipe(csv())
+    .on("data", (row) => {
+      const product = row["Product Name"];
+      if (!results[product]) {
+        results[product] = {
+          product,
+          channels: [],
+          optimalMessage: row["Marketing Notes"] || "",
+        };
+      }
+      results[product].channels.push({
+        name: row["Platform"],
+        effectiveness: parseFloat(row["Effectiveness (%)"]),
+        cost: `₹${parseInt(row["Ad Budget (INR)"] || 0).toLocaleString()}`,
+        roi: `${parseFloat(row["ROI (%)"]).toFixed(0)}%`,
+      });
+    })
+    .on("end", () => {
+      const data = Object.values(results);
+      res.json({
+        success: true,
+        data,
+        timestamp: new Date().toISOString(),
+      });
+    });
 };

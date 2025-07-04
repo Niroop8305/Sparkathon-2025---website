@@ -4,12 +4,14 @@ import ProductTrends from "../components/ProductTrends";
 import PricingOptimization from "../components/PricingOptimization";
 import MarketingInsights from "../components/MarketingInsights";
 import BusinessImpact from "../components/BusinessImpact";
+import NavBar from "../components/NavBar";
 
 function Dashboard() {
   const [products, setProducts] = React.useState([]);
   const [marketingData, setMarketingData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+  const [selected, setSelected] = React.useState("productTrends");
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -34,7 +36,6 @@ function Dashboard() {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
@@ -71,9 +72,22 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
       <Hero />
-      <ProductTrends products={products} />
-      <PricingOptimization products={products} />
-      <MarketingInsights marketingData={marketingData} />
+      <div className="w-full">
+        <div className="mb-0">
+          <NavBar selected={selected} onSelect={setSelected} />
+        </div>
+        <div className="mt-0">
+          {selected === "productTrends" && (
+            <ProductTrends products={products} />
+          )}
+          {selected === "pricingOptimization" && (
+            <PricingOptimization products={products} />
+          )}
+          {selected === "marketingInsights" && (
+            <MarketingInsights marketingData={marketingData} />
+          )}
+        </div>
+      </div>
       <BusinessImpact products={products} />
     </div>
   );

@@ -21,6 +21,27 @@ import {
 } from "recharts";
 
 const MarketingInsights = ({ marketingData }) => {
+  const [search, setSearch] = React.useState("");
+  const [selectedProduct, setSelectedProduct] = React.useState("");
+  // Get unique product names for dropdown
+  const productNames = Array.from(new Set(marketingData.map((p) => p.product)));
+  // Filtered data based on search or selected product
+  const filteredData = selectedProduct
+    ? marketingData.filter((p) => p.product === selectedProduct)
+    : search
+    ? marketingData.filter((p) =>
+        p.product.toLowerCase().includes(search.toLowerCase())
+      )
+    : marketingData;
+
+  // For product details display logic
+  const [visibleCount, setVisibleCount] = React.useState(4);
+  let productDetailsToShow = [];
+  if (selectedProduct) {
+    productDetailsToShow = filteredData;
+  } else {
+    productDetailsToShow = filteredData.slice(0, visibleCount);
+  }
   const getChannelIcon = (channelName) => {
     switch (channelName.toLowerCase()) {
       case "social media":
@@ -45,7 +66,7 @@ const MarketingInsights = ({ marketingData }) => {
 
   const chartColors = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
 
-  const allChannelsData = marketingData.flatMap((product) =>
+  const allChannelsData = filteredData.flatMap((product) =>
     product.channels.map((channel) => ({
       name: channel.name,
       effectiveness: channel.effectiveness,
@@ -72,8 +93,35 @@ const MarketingInsights = ({ marketingData }) => {
   );
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 bg-white w-full">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+          <input
+            type="text"
+            placeholder="Search product..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setSelectedProduct("");
+            }}
+            className="border border-gray-300 rounded-lg px-4 py-2 w-full md:w-64"
+          />
+          <select
+            value={selectedProduct}
+            onChange={(e) => {
+              setSelectedProduct(e.target.value);
+              setSearch("");
+            }}
+            className="border border-gray-300 rounded-lg px-4 py-2 w-full md:w-64"
+          >
+            <option value="">All Products</option>
+            {productNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Revolutionize Your Marketing
@@ -151,7 +199,7 @@ const MarketingInsights = ({ marketingData }) => {
         </div>
 
         <div className="space-y-8">
-          {marketingData.map((product, productIndex) => (
+          {productDetailsToShow.map((product, productIndex) => (
             <div key={productIndex} className="bg-gray-50 rounded-3xl p-8">
               <div className="mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
@@ -222,6 +270,16 @@ const MarketingInsights = ({ marketingData }) => {
               </div>
             </div>
           ))}
+          {!selectedProduct && filteredData.length > visibleCount && (
+            <div className="flex justify-center mt-6">
+              <button
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                onClick={() => setVisibleCount((prev) => prev + 4)}
+              >
+                Show More
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>

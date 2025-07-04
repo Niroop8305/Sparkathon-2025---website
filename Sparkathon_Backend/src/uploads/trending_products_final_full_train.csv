@@ -1,0 +1,8 @@
+Product Name,Trend Label,Predicted Label,Trend Score,Expected Sales,Confidence (%)
+Tomato,High,High,7.58,1908.5101999999997,100
+Spinach,High,High,6.56,2092.1376,87
+Bread,Medium-High,Medium-High,6.46,2287.582,85
+Milk,Medium,Medium,5.93,1247.5862,78
+Yogurt,Medium,Medium,5.66,1618.4397,75
+Cheese,Medium,Medium,5.53,2399.0724,73
+Banana,Medium,Medium,3.42,403.62839999999994,45

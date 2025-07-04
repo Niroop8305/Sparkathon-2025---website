@@ -2,7 +2,11 @@ import React from "react";
 import { TrendingUp, Package, Target, BarChart3 } from "lucide-react";
 
 const ProductTrends = ({ products }) => {
+  const [visibleCount, setVisibleCount] = React.useState(6);
+  const visibleProducts = products.slice(0, visibleCount);
+  // Accepts trendLabel or predictedLabel, fallback to empty string
   const getDemandColor = (demand) => {
+    if (!demand) return "text-gray-600 bg-gray-100";
     switch (demand.toLowerCase()) {
       case "high":
         return "text-green-600 bg-green-100";
@@ -82,9 +86,9 @@ const ProductTrends = ({ products }) => {
           </h3>
 
           <div className="grid lg:grid-cols-2 gap-8">
-            {products.map((product) => (
+            {visibleProducts.map((product, idx) => (
               <div
-                key={product.id}
+                key={product.id || product.name || idx}
                 className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300"
               >
                 <div className="flex items-start justify-between mb-4">
@@ -92,14 +96,15 @@ const ProductTrends = ({ products }) => {
                     <h4 className="text-xl font-bold text-gray-900">
                       {product.name}
                     </h4>
-                    <p className="text-gray-600">{product.category}</p>
+                    {/* Category may not exist in new data */}
+                    <p className="text-gray-600">{product.category || ""}</p>
                   </div>
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium ${getDemandColor(
-                      product.predictedDemand
+                      product.trendLabel || product.predictedLabel || ""
                     )}`}
                   >
-                    {product.predictedDemand}
+                    {product.trendLabel || product.predictedLabel || "N/A"}
                   </span>
                 </div>
 
@@ -141,6 +146,16 @@ const ProductTrends = ({ products }) => {
               </div>
             ))}
           </div>
+          {products.length > visibleCount && (
+            <div className="flex justify-center mt-6">
+              <button
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                onClick={() => setVisibleCount((prev) => prev + 6)}
+              >
+                Show More
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>

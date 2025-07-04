@@ -13,21 +13,40 @@ import {
 } from "recharts";
 
 const PricingOptimization = ({ products }) => {
-  const chartData = products.map((product) => ({
-    name: product.name.split(" ")[0],
-    current: product.currentPrice,
-    optimal: product.optimalPrice,
-    sales: product.expectedSales / 100,
-    waste: parseInt(product.wasteReduction.replace("%", "")),
-  }));
+  const [visibleCount, setVisibleCount] = React.useState(6);
+  const visibleProducts = products.slice(0, visibleCount);
+  const chartData = visibleProducts.map((product) => {
+    let waste = product.wasteReduction;
+    if (typeof waste === "string" && waste.includes("%")) {
+      waste = parseFloat(waste.replace("%", ""));
+    } else if (!isNaN(Number(waste))) {
+      waste = Number(waste);
+    } else {
+      waste = 0;
+    }
+    return {
+      name: (product.name || "").split(" ")[0],
+      current: Number(product.currentPrice) || 0,
+      optimal: Number(product.optimalPrice) || 0,
+      sales: Number(product.expectedSales) / 100 || 0,
+      waste,
+    };
+  });
 
   const totalWasteReduction =
-    products.reduce(
-      (sum, product) => sum + parseInt(product.wasteReduction.replace("%", "")),
-      0
-    ) / products.length;
+    visibleProducts.reduce((sum, product) => {
+      let waste = product.wasteReduction;
+      if (typeof waste === "string" && waste.includes("%")) {
+        waste = parseFloat(waste.replace("%", ""));
+      } else if (!isNaN(Number(waste))) {
+        waste = Number(waste);
+      } else {
+        waste = 0;
+      }
+      return sum + waste;
+    }, 0) / (visibleProducts.length || 1);
 
-  const totalSalesIncrease = products.reduce(
+  const totalSalesIncrease = visibleProducts.reduce(
     (sum, product) => sum + product.expectedSales,
     0
   );
@@ -166,9 +185,9 @@ const PricingOptimization = ({ products }) => {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product, index) => (
+                {visibleProducts.map((product, index) => (
                   <tr
-                    key={product.id}
+                    key={product.id || product.name || index}
                     className={`border-b border-gray-100 ${
                       index % 2 === 0 ? "bg-gray-50" : "bg-white"
                     }`}
@@ -184,20 +203,21 @@ const PricingOptimization = ({ products }) => {
                       </div>
                     </td>
                     <td className="py-4 px-6 font-semibold text-gray-900">
-                      ${product.currentPrice.toFixed(2)}
+                      ${Number(product.currentPrice).toFixed(2)}
                     </td>
                     <td className="py-4 px-6 font-semibold text-green-600">
-                      ${product.optimalPrice.toFixed(2)}
+                      ${Number(product.optimalPrice).toFixed(2)}
                     </td>
                     <td className="py-4 px-6">
                       <span
                         className={`font-semibold ${
+                          typeof product.priceChange === "string" &&
                           product.priceChange.startsWith("+")
                             ? "text-green-600"
                             : "text-red-600"
                         }`}
                       >
-                        {product.priceChange}
+                        {product.priceChange || "N/A"}
                       </span>
                     </td>
                     <td className="py-4 px-6 font-semibold text-green-600">
@@ -220,6 +240,16 @@ const PricingOptimization = ({ products }) => {
                 ))}
               </tbody>
             </table>
+            {products.length > visibleCount && (
+              <div className="flex justify-center mt-6">
+                <button
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  onClick={() => setVisibleCount((prev) => prev + 6)}
+                >
+                  Show More
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

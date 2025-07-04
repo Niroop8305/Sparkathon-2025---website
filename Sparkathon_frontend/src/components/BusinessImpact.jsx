@@ -22,19 +22,30 @@ import {
 const BusinessImpact = ({ products }) => {
   // Calculate business metrics
   const totalRevenue = products.reduce(
-    (sum, product) => sum + product.optimalPrice * product.expectedSales,
+    (sum, product) =>
+      sum +
+      (Number(product.optimalPrice) || 0) *
+        (Number(product.expectedSales) || 0),
     0
   );
 
+  // wasteReduction may be a number (stock left) or a string ("15%"), handle both
   const totalWasteReduction =
-    products.reduce(
-      (sum, product) => sum + parseInt(product.wasteReduction.replace("%", "")),
-      0
-    ) / products.length;
+    products.reduce((sum, product) => {
+      const waste = product.wasteReduction;
+      if (typeof waste === "string" && waste.includes("%")) {
+        return sum + parseFloat(waste.replace("%", ""));
+      } else if (!isNaN(Number(waste))) {
+        return sum + Number(waste);
+      }
+      return sum;
+    }, 0) / (products.length || 1);
 
   const averageConfidence =
-    products.reduce((sum, product) => sum + product.confidence, 0) /
-    products.length;
+    products.reduce(
+      (sum, product) => sum + (Number(product.confidence) || 0),
+      0
+    ) / (products.length || 1);
 
   // Mock historical data for charts
   const revenueData = [
