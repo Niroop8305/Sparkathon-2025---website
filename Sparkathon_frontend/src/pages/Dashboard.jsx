@@ -8,16 +8,27 @@ import NavBar from "../components/NavBar";
 
 function Dashboard() {
   const [products, setProducts] = React.useState([]);
+  const [prices, setPrices] = React.useState([]);
   const [marketingData, setMarketingData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [selected, setSelected] = React.useState("productTrends");
+  // Get userId from token (assuming JWT in localStorage)
+  let userId = null;
+  try {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      userId = payload.id;
+    }
+  } catch {}
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, marketingRes] = await Promise.all([
+        const [productsRes, priceRes, marketingRes] = await Promise.all([
           fetch("http://localhost:5000/api/products"),
+          fetch("http://localhost:5000/api/products/pricing"),
           fetch("http://localhost:5000/api/marketing"),
         ]);
 
@@ -26,9 +37,11 @@ function Dashboard() {
         }
 
         const productsData = await productsRes.json();
+        const priceData = await priceRes.json();
         const marketingDataRes = await marketingRes.json();
 
         setProducts(productsData.data);
+        setPrices(priceData.data);
         setMarketingData(marketingDataRes.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -70,7 +83,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white relative">
       <Hero />
       <div className="w-full">
         <div className="mb-0">
@@ -81,7 +94,7 @@ function Dashboard() {
             <ProductTrends products={products} />
           )}
           {selected === "pricingOptimization" && (
-            <PricingOptimization products={products} />
+            <PricingOptimization products={prices} />
           )}
           {selected === "marketingInsights" && (
             <MarketingInsights marketingData={marketingData} />

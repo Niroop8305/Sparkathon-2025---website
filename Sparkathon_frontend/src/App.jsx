@@ -22,7 +22,6 @@ function isTokenValid(token) {
 function App() {
   const token = localStorage.getItem("token");
   const isAuthenticated = isTokenValid(token);
-  console.log("Token:", token);
   if (token && !isAuthenticated) {
     localStorage.removeItem("token");
   }

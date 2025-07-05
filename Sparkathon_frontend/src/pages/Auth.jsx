@@ -42,7 +42,6 @@ function Auth() {
         password,
       });
       localStorage.setItem("token", res.data.token);
-      console.log("Login successful, navigating to dashboard");
       navigate("/dashboard");
     } catch (err) {
       localStorage.removeItem("token"); // Clear any invalid token
