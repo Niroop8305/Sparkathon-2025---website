@@ -1,7 +1,6 @@
-// src/controllers/upload.controller.js
-
 import fs from "fs";
 import path from "path";
+import { notifyTrendingProduct } from "./emailNotifi.controller.js";
 
 export const uploadCsv = async (req, res) => {
   try {
@@ -12,7 +11,6 @@ export const uploadCsv = async (req, res) => {
       });
     }
 
-    // Save the uploaded file using its original name in the uploads directory inside src
     const destPath = path.join(
       process.cwd(),
       "src",
@@ -22,7 +20,7 @@ export const uploadCsv = async (req, res) => {
     console.log(
       `Received file: ${req.file.originalname}, saved as: ${req.file.path}`
     );
-    fs.rename(req.file.path, destPath, (err) => {
+    fs.rename(req.file.path, destPath, async (err) => {
       if (err) {
         console.error(`Error saving file: ${err.message}`);
         return res.status(500).json({
@@ -31,6 +29,17 @@ export const uploadCsv = async (req, res) => {
         });
       }
       console.log(`File saved to: ${destPath}`);
+
+      // Only trigger email if the trending products file was uploaded
+      if (req.file.originalname === "trending_products_final_full_train.csv") {
+        try {
+          await notifyTrendingProduct();
+          console.log("Notification emails sent to all users.");
+        } catch (notifyError) {
+          console.error("Error sending notification emails:", notifyError.message);
+        }
+      }
+
       res.json({
         success: true,
         message: `CSV data uploaded and updated successfully as ${req.file.originalname}`,
