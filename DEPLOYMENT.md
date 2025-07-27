@@ -77,12 +77,15 @@ vercel --prod
 
 ## Post-Deployment Testing 🧪
 
-1. [ ] Test backend API endpoints (Railway URL)
-2. [ ] Test frontend application (Vercel URL)
-3. [ ] Test frontend-backend connectivity
-4. [ ] Test authentication flow
-5. [ ] Test file upload functionality
-6. [ ] Test all major features
+1. [ ] Test backend health endpoints:
+   - [ ] `GET https://your-railway-backend.railway.app/` (root health check)
+   - [ ] `GET https://your-railway-backend.railway.app/api/health` (API health check)
+2. [ ] Test backend API endpoints (Railway URL)
+3. [ ] Test frontend application (Vercel URL)
+4. [ ] Test frontend-backend connectivity
+5. [ ] Test authentication flow
+6. [ ] Test file upload functionality
+7. [ ] Test all major features
 
 ## Security & Optimization 🔒
 
@@ -109,6 +112,10 @@ vercel --prod
 
 ### Backend Issues:
 
+- **404 Error on API endpoints:**
+  - Check if backend is running: Visit `https://your-app.railway.app/` for health check
+  - Verify API routes: Visit `https://your-app.railway.app/api/health`
+  - Check Railway deployment logs for errors
 - **503 Error:** Check Railway logs, usually environment variables
 - **Database Connection:** Verify MongoDB connection string
 - **CORS Error:** Check cors() configuration in app.js
