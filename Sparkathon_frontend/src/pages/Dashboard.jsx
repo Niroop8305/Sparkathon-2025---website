@@ -85,7 +85,7 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white relative">
       <Hero />
-      <div className="w-full">
+      <div className="w-full" data-section="dashboard">
         <div className="mb-0">
           <NavBar selected={selected} onSelect={setSelected} />
         </div>
@@ -101,7 +101,9 @@ function Dashboard() {
           )}
         </div>
       </div>
-      <BusinessImpact products={products} />
+      <div data-section="about">
+        <BusinessImpact products={products} />
+      </div>
     </div>
   );
 }

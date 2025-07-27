@@ -46,3 +46,28 @@ router.post("/login", async (req, res) => {
 });
 
 export default router;
+
+// Create test user endpoint for development
+router.post("/create-test-user", async (req, res) => {
+  try {
+    // Check if test user already exists
+    const existingUser = await UserModel.findOne({
+      email: "admin@example.com",
+    });
+    if (existingUser) {
+      return res.status(200).json({ msg: "Test user already exists" });
+    }
+
+    // Create test user
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+    const testUser = new UserModel({
+      name: "Admin User",
+      email: "admin@example.com",
+      password: hashedPassword,
+    });
+    await testUser.save();
+    res.status(201).json({ msg: "Test user created successfully" });
+  } catch (err) {
+    res.status(500).json({ msg: "Error creating test user" });
+  }
+});
