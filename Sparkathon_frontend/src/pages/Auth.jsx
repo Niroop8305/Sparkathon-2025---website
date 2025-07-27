@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { User, Mail, Lock, Eye, EyeOff, Loader } from "lucide-react";
 import CustomAlert from "../components/CustomAlert";
 import { useAlert } from "../hooks/useAlert";
+import { API_BASE_URL } from "../config/api";
 
 function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -38,7 +39,7 @@ function Auth() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
+      const res = await axios.post(`${API_BASE_URL}/auth/register`, {
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -63,7 +64,7 @@ function Auth() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, {
         email: formData.email,
         password: formData.password,
       });

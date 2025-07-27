@@ -5,6 +5,7 @@ import PricingOptimization from "../components/PricingOptimization";
 import MarketingInsights from "../components/MarketingInsights";
 import BusinessImpact from "../components/BusinessImpact";
 import NavBar from "../components/NavBar";
+import { API_BASE_URL } from "../config/api";
 
 function Dashboard() {
   const [products, setProducts] = React.useState([]);
@@ -27,9 +28,9 @@ function Dashboard() {
     const fetchData = async () => {
       try {
         const [productsRes, priceRes, marketingRes] = await Promise.all([
-          fetch("http://localhost:5000/api/products"),
-          fetch("http://localhost:5000/api/products/pricing"),
-          fetch("http://localhost:5000/api/marketing"),
+          fetch(`${API_BASE_URL}/products`),
+          fetch(`${API_BASE_URL}/products/pricing`),
+          fetch(`${API_BASE_URL}/marketing`),
         ]);
 
         if (!productsRes.ok || !marketingRes.ok) {
