@@ -1,6 +1,6 @@
 # 🛒 Walmart Sparkathon 2025 - AI-Powered Retail Analytics Platform
 
-[![Demo](https://img.shields.io/badge/Demo-Live%20Website-blue?style=for-the-badge)](sparkathon-2025-website.vercel.app)
+[![Demo](https://img.shields.io/badge/Demo-Live%20Website-blue?style=for-the-badge)](https://sparkathon-2025-website.vercel.app/auth)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=node.js)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18+-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
@@ -29,7 +29,7 @@ An integrated platform that combines predictive analytics, machine learning, and
 
 ## 🚀 Live Demo
 
-**🔗 [View Live Demo](sparkathon-2025-website.vercel.app)**
+**🔗 [View Live Demo](https://sparkathon-2025-website.vercel.app/auth)**
 
 ### Test Credentials
 
