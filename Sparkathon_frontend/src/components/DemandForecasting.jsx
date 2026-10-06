@@ -108,7 +108,7 @@ function getHumanReadableExplanation(feature, value, shapValue) {
   safeValue !== null
     ? `The prediction is for day ${safeValue.toFixed(0)} of the month.`
     : "The day of the month was considered.",
-    
+
     day_of_week:
   safeValue !== null
     ? `The prediction is for ${
@@ -504,6 +504,132 @@ function DemandForecasting() {
     )}
   </p>
 </div>
+
+{/* Availability & Stockout Context */}
+{(() => {
+  const availabilityFeatures = explanation.top_features?.filter((item) =>
+    [
+      "stockout_lag_1",
+      "stockout_lag_3",
+      "stockout_lag_7",
+      "stock_hours_lag_1",
+      "stock_hours_lag_3",
+      "stock_hours_lag_7",
+      "stockout_intensity_lag_7",
+    ].includes(item.feature)
+  );
+
+  if (!availabilityFeatures?.length) return null;
+
+  return (
+    <div className="mt-6 rounded-lg border p-4 bg-orange-50">
+      <h4 className="font-semibold mb-2">
+        📦 Availability & Stockout Context
+      </h4>
+
+      <p className="text-sm text-gray-600 mb-4">
+        Historical product availability is considered when interpreting
+        demand. These values describe recent stockout or unavailability
+        conditions, not the product's current stock status.
+      </p>
+
+      <div className="space-y-3">
+        {availabilityFeatures.map((item) => (
+          <div
+            key={item.feature}
+            className="bg-white rounded-lg border p-3"
+          >
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-gray-800">
+                {friendlyFeatureNames[item.feature] || item.feature}
+              </span>
+
+              <span className="font-semibold text-gray-700">
+                {item.feature.startsWith("stock_hours")
+  ? Number(item.feature_value).toFixed(0) + " hours"
+  : Number(item.feature_value).toFixed(2)}
+              </span>
+            </div>
+
+            <p className="text-sm text-gray-600 mt-1">
+              {getHumanReadableExplanation(
+                item.feature,
+                item.feature_value,
+                item.shap_value
+              )}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+})()}
+
+{/* Inventory Recommendation */}
+{(() => {
+  const stockoutFeatures = explanation.top_features?.filter((item) =>
+    [
+      "stockout_lag_1",
+      "stockout_lag_3",
+      "stockout_lag_7",
+      "stock_hours_lag_1",
+      "stock_hours_lag_3",
+      "stock_hours_lag_7",
+      "stockout_intensity_lag_7",
+    ].includes(item.feature)
+  ) || [];
+
+  const maxUnavailableHours = Math.max(
+    0,
+    ...stockoutFeatures
+      .filter((item) => item.feature.startsWith("stock_hours"))
+      .map((item) => Number(item.feature_value) || 0)
+  );
+
+  const hasHistoricalStockout = stockoutFeatures.some(
+    (item) =>
+      item.feature.startsWith("stockout_lag") &&
+      Number(item.feature_value) > 0
+  );
+
+  let recommendation;
+  let explanationText;
+
+  if (maxUnavailableHours >= 4 || hasHistoricalStockout) {
+    recommendation = "Prioritize inventory availability";
+    explanationText =
+      "Recent historical stockout or unavailability signals indicate a risk of missed sales. Review replenishment levels and consider maintaining sufficient safety stock.";
+  } else if (Number(prediction) >= 1) {
+    recommendation = "Maintain adequate inventory";
+    explanationText =
+      "The predicted demand suggests that sufficient inventory should be maintained to support expected sales.";
+  } else {
+    recommendation = "Monitor inventory";
+    explanationText =
+      "Predicted demand is relatively low, so inventory can be monitored while avoiding unnecessary overstocking.";
+  }
+
+  return (
+    <div className="mt-6 rounded-lg border p-4 bg-blue-50">
+      <h4 className="font-semibold mb-2">
+        💡 Recommended Inventory Action
+      </h4>
+
+      <p className="text-lg font-semibold text-gray-900">
+        {recommendation}
+      </p>
+
+      <p className="text-sm text-gray-600 mt-2">
+        {explanationText}
+      </p>
+
+      <p className="text-xs text-gray-500 mt-3">
+        Recommendation is based on the forecast and historical availability
+        signals shown above.
+      </p>
+    </div>
+  );
+})()}
 
     {(() => {
       const positiveFeatures = explanation.top_features.filter(
