@@ -5,6 +5,7 @@ import PricingOptimization from "../components/PricingOptimization";
 import MarketingInsights from "../components/MarketingInsights";
 import BusinessImpact from "../components/BusinessImpact";
 import NavBar from "../components/NavBar";
+import DemandForecasting from "../components/DemandForecasting";
 import { API_BASE_URL } from "../config/api";
 
 function Dashboard() {
@@ -99,6 +100,9 @@ function Dashboard() {
           )}
           {selected === "marketingInsights" && (
             <MarketingInsights marketingData={marketingData} />
+          )}
+          {selected === "demandForecasting" && (
+          <DemandForecasting />
           )}
         </div>
       </div>

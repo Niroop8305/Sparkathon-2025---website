@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { TrendingUp, DollarSign, Target } from "lucide-react";
+import { TrendingUp, DollarSign, Target, BrainCircuit } from "lucide-react";
 
 const navItems = [
   {
@@ -21,6 +21,12 @@ const navItems = [
     icon: Target,
     description: "Get data-driven marketing recommendations",
   },
+  {
+  label: "Demand Forecasting",
+  key: "demandForecasting",
+  icon: BrainCircuit,
+  description: "Forecast demand with stockout-aware AI and explainable predictions",
+},
 ];
 
 function NavBar({ selected, onSelect }) {

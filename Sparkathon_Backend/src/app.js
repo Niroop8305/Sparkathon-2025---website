@@ -1,3 +1,5 @@
+import dns from "dns";
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -40,7 +42,25 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+app.use((req, res, next) => {
+  console.log("APP REQUEST:", req.method, req.originalUrl);
+  next();
+});
+app.get("/api/forecast/direct-test", (req, res) => {
+  res.json({ message: "Direct forecast endpoint works" });
+});
 app.use("/api", router);
+console.log(
+  "APP ROUTES:",
+  app.router.stack.map((r) => r.regexp?.toString() || r.name)
+);
+console.log(
+  "REGISTERED ROUTES:",
+  app.router.stack.map((r) => ({
+    name: r.name,
+    path: r.route?.path,
+  }))
+);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

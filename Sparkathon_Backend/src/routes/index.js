@@ -4,6 +4,7 @@ import marketingRoutes from "./marketing.routes.js";
 import uploadRoutes from "./upload.routes.js";
 import authRoutes from "./auth.routes.js";
 import userRoutes from "./user.routes.js";
+import forecastRoutes from "./forecast.routes.js";
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use("/marketing", marketingRoutes);
 router.use("/upload", uploadRoutes);
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
+router.use("/forecast", forecastRoutes);
 
 export default router;
