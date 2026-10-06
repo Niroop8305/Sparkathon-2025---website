@@ -23,3 +23,9 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+# ML datasets
+data/*.parquet
+# Python temporary files
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
